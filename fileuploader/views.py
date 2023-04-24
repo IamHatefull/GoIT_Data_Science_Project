@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 
 from django.views import View
-from fileuploader.forms import UploadFile
-from fileuploader.models import ImageManager, NeuralModel
+from fileuploader.forms import UploadFile, NNModelForm
+from fileuploader.models import ImageManager, NeuralModel, FileModel
 from fileuploader.keras_model import image_classify
 from datetime import datetime, timezone, timedelta
 from django.core.files import File
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import os
 # Create your views here.
 
@@ -65,3 +67,20 @@ class AboutView(View):
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, context={'title': 'Image Classifier'})
     
+
+class AddModelView(CreateView):
+    model = FileModel
+    #template_name = 'pages/add_model.html'
+    fields = ['loaded_file',]
+    success_url = reverse_lazy('index')
+
+
+def upload_file(request):
+        if request.method == 'POST':
+            form = NNModelForm(request.POST, request.FILES)
+            if form.is_valid():
+                form.save()
+                return redirect('index')
+        else:
+            form = NNModelForm()
+        return render(request, 'pages/add_model.html', {'form' : form})

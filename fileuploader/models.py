@@ -17,6 +17,9 @@ class NeuralModel(models.Model):
         return self.model_type
 
 
+class FileModel(models.Model):
+    loaded_file = models.FileField(upload_to='models/%Y/%m/%d')
+
 class ImageManager(models.Model):
     file_name = models.ImageField(upload_to='images/%Y/%m/%d')
     uploaded_at = models.DateTimeField(null=False, auto_now_add=True)
